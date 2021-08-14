@@ -19,6 +19,18 @@ static int nframe = 0;
 static bool quit = false;
 
 static int npart = PART_ROTO;
+static int vramPage = 0;
+
+static uint16 getVramStart()
+{
+	return 0xB800 + (vramPage << 9);
+}
+
+static void pageFlip()
+{
+	pageFlipPseudo160x50(vramPage);
+	vramPage = (vramPage + 1) & 1;
+}
 
 static void input()
 {
@@ -52,7 +64,7 @@ int prevTime = -1;
 
 static void scroll(int time)
 {
-	uint8 far *dst = (uint8 far *)MK_FP(0xB800+0xA*45,0);
+	uint8 far *dst = (uint8 far *)MK_FP(getVramStart()+0xA*45,0);
 
 	char *textOff = text + (time >> 2);
 
@@ -73,14 +85,16 @@ static void scroll(int time)
 
 static void script(int fxFrame, int part)
 {
+	const uint16 vramStart = getVramStart();
+
 	switch (part)
 	{
 		case PART_ROTO:
-			fxRotoRun(fxFrame);
+			fxRotoRun(fxFrame, vramStart);
 		break;
 
 		case PART_PLASMA:
-			fxPlasmaRun(fxFrame);
+			fxPlasmaRun(fxFrame, vramStart);
 		break;
 
 		default:
@@ -108,8 +122,11 @@ int main()
 	while(!quit)
 	{
 		if (vsync) waitForVsync();
+
 		script(nframe, npart);
 		input();
+
+		pageFlip();
 		++nframe;
 	}
 	int time1 = getTime();

@@ -88,6 +88,12 @@ static void preparePseudoScreen()
 	disableTextBlink();
 }
 
+void pageFlipPseudo160x50(int page)
+{
+	outb(0x3D4, 0x0C);
+	outb(0x3D5, (page & 1) << 4);
+}
+
 static void setPseudo160x100_CGA()
 {
 	outb(0x3D4, 0x04);

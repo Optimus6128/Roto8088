@@ -5,6 +5,6 @@
 #define FP_SHR 16
 
 void fxRotoInit();
-void fxRotoRun(int fxFrame);
+void fxRotoRun(int fxFrame, uint16 vramStart);
 
 #endif

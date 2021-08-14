@@ -2,15 +2,14 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "types.h"
+
 #include "fx_roto.h"
 #include "d_roto.h"
 
 #include "mathutil.h"
 #include "dio.h"
 #include "video.h"
-
-#include "types.h"
-
 
 static bool isFxRotoInit = false;
 
@@ -87,27 +86,25 @@ void fxRotoInit()
 	isFxRotoInit = true;
 }
 
-void fxRotoRunAsm80x50(int idx, int idy)
+static void fxRotoRunAsm80x50(int idx, int idy, uint16 vramStart)
 {
 	_asm
 	{
 		push bp
 		push ds
 
-		mov si, idx
-		mov bp, idy
+		mov ax,08000h
+		mov ds,ax
+		mov es,[vramStart]
+
+		mov si,[idx]
+		mov bp,[idy]
 
 		xor cx,cx
 		mov ax,40
 		mul si
 		sub cx,ax
 		xor dx,dx
-
-		mov ax,08000h
-		mov ds,ax
-
-		mov ax,0b800h
-		mov es,ax
 
 		xor di,di
 
@@ -773,7 +770,7 @@ void fxRotoRunAsm80x50(int idx, int idy)
 	}
 }
 
-void fxRotoRun(int fxFrame)
+void fxRotoRun(int fxFrame, uint16 vramStart)
 {
 	if (!isFxRotoInit) fxRotoInit();
 
@@ -784,5 +781,5 @@ void fxRotoRun(int fxFrame)
 	const int idx = (rotSinTab[(angle + 64) & 255] * zoom) >> 4;
 	const int idy = (rotSinTab[angle] * zoom) >> 4;
 
-	fxRotoRunAsm80x50(idx, idy);
+	fxRotoRunAsm80x50(idx, idy, vramStart);
 }

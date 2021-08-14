@@ -12,6 +12,7 @@ extern bool isVGA;
 void setMode(int mode);
 void waitForVsync();
 void detectGfxCard();
+void pageFlipPseudo160x50(int page);
 void setPseudoScreen160xY(VramLines lines);
 
 #endif

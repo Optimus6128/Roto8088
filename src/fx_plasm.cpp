@@ -2,6 +2,8 @@
 #include <math.h>
 #include <string.h>
 
+#include "types.h"
+
 #include "fx_roto.h"
 #include "d_roto.h"
 
@@ -19,7 +21,7 @@ void fxPlasmaInit()
 	initSinTab8(PLASMA_SINTAB_SIZE, 8, 92, isin2);
 }
 
-void fxPlasmaRun(int fxFrame)
+void fxPlasmaRun(int fxFrame, uint16 vramStart)
 {
 	if (!isFxPlasmaInit) {
 		fxPlasmaInit();
